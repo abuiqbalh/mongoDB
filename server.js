@@ -3,6 +3,7 @@ var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 
+
 // Our scraping tools
 // Axios is a promised-based http library, similar to jQuery's Ajax method
 // It works on the client and on the server
@@ -13,7 +14,7 @@ var cheerio = require("cheerio");
 var db = require("./models");
 
 var PORT = process.env.NODE_ENV||3000;
-
+var uri="mongodb://abu:oakdale124@ds247830.mlab.com:47830/heroku_5dvl3kjt"
 // Initialize Express
 var app = express();
 
@@ -27,16 +28,26 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://abu:oakdale124@ds247830.mlab.com:47830/heroku_5dvl3kjt");
+//mongoose.connect("mongodb://abu:oakdale124@ds247830.mlab.com:47830/heroku_5dvl3kjt");
 
-// Routes
+mongoose.connect(uri, function(error) {
+  // Check error in initial connection. There is no 2nd param to the callback.
+  if (error){throw err};
+  console.log(error);
+});
+
+
+
+  // Routes
 
 // A GET route for scraping the echoJS website
-app.get("/scrape", function(req, res) {
+//app.get("/scrape", function(req, res) 
+app.get("/articles", function(rec, res) {
   // First, we grab the body of the html with request
   axios.get("http://www.echojs.com/").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
+    //console.log(response)
 
     // Now, we grab every h2 within an article tag, and do the following:
     $("article h2").each(function(i, element) {
@@ -50,12 +61,14 @@ app.get("/scrape", function(req, res) {
       result.link = $(this)
         .children("a")
         .attr("href");
+        console.log(result);
 
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
         .then(function(dbArticle) {
           // View the added result in the console
           console.log(dbArticle);
+          res.send(dbArticle);
         })
         .catch(function(err) {
           // If an error occurred, send it to the client
@@ -117,6 +130,8 @@ app.post("/articles/:id", function(req, res) {
       res.json(err);
     });
 });
+
+
 
 // Start the server
 app.listen(PORT, function() {
