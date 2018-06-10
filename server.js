@@ -13,7 +13,7 @@ var cheerio = require("cheerio");
 // Require all models
 var db = require("./models");
 
-var PORT = process.env.NODE_ENV||3000;
+var PORT = process.env.PORT||3000;
 var uri="mongodb://abu:oakdale124@ds247830.mlab.com:47830/heroku_5dvl3kjt"
 // Initialize Express
 var app = express();
