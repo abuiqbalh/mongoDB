@@ -42,6 +42,13 @@ mongoose.connect(uri, function(error) {
 
 // A GET route for scraping the echoJS website
 //app.get("/scrape", function(req, res) 
+app.get("/", function(req, res){
+
+  db.Article.find().then(function(data){
+    res.json(data);
+  })
+
+})
 app.get("/articles", function(rec, res) {
   // First, we grab the body of the html with request
   axios.get("http://www.echojs.com/").then(function(response) {
@@ -77,6 +84,7 @@ app.get("/articles", function(rec, res) {
     });
 
     // If we were able to successfully scrape and save an Article, send a message to the client
+
     res.send("Scrape Complete");
   });
 });
