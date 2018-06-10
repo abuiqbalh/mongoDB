@@ -14,7 +14,8 @@ var cheerio = require("cheerio");
 var db = require("./models");
 
 var PORT = process.env.PORT||3000;
-var uri="mongodb://abu:oakdale124@ds247830.mlab.com:47830/heroku_5dvl3kjt"
+var uri="mongodb://abu:oakdale124@ds247830.mlab.com:47830/heroku_5dvl3kjt";
+//var collections = ["Articles"];
 // Initialize Express
 var app = express();
 
@@ -42,13 +43,22 @@ mongoose.connect(uri, function(error) {
 
 // A GET route for scraping the echoJS website
 //app.get("/scrape", function(req, res) 
-app.get("/", function(req, res){
 
-  db.Article.find().then(function(data){
-    res.json(data);
-  })
 
-})
+app.get("/", function(req, res) {
+  
+  db.Article.find({}, function(error, found) {
+    // Log any errors if the server encounters one
+    if (error) {
+      console.log(error);
+    }
+    // Otherwise, send the result of this query to the browser
+    else {
+      res.json(found);
+    }
+  });
+});
+
 app.get("/articles", function(rec, res) {
   // First, we grab the body of the html with request
   axios.get("http://www.echojs.com/").then(function(response) {
