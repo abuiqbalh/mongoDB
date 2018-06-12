@@ -1,11 +1,25 @@
 // Grab the articles as a json
-$.getJSON("/articles", function(data) {
+$.getJSON("/results", function(data) {
   // For each one
   for (var i = 0; i < data.length; i++) {
     // Display the apropos information on the page
-    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
+    $("#results").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "  "+ '<a href="#" id='+data[i]._id+' class="delete">Delete Articles</a>'+ "<br />" + data[i].link + "</p>" );
+    
   }
 });
+
+$(".delete").on("click", function(){
+  var thisid=$(this).attr("id");
+  console.log(thisid);
+  $.ajax({
+    method:"DELETE",
+    url: "/articles/" + thisid
+  })
+  .then(function(){
+    console.log("item Deleted")
+  })
+
+})
 
 
 // Whenever someone clicks a p tag
